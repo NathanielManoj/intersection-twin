@@ -1,0 +1,8 @@
+# corner_0  world (0,0)
+0 0
+# corner_1  world (5,0)
+800 0
+# corner_2  world (0,5)
+0 800
+# corner_3  world (5,5)
+800 800
