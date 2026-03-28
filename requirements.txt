@@ -1,0 +1,7 @@
+ultralytics
+opencv-python-headless
+numpy
+google-cloud-storage
+flask
+confluent-kafka
+neo4j
