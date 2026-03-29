@@ -56,7 +56,7 @@ def main():
     ap.add_argument("--cam2",      default="config/cam2_scene.jpg")
     ap.add_argument("--cam1_gcs",  default=None)
     ap.add_argument("--cam2_gcs",  default=None)
-    ap.add_argument("--conf",      type=float, default=0.4)
+    ap.add_argument("--conf",      type=float, default=0.15)
     ap.add_argument("--output",    default="outputs")
     ap.add_argument("--timestamp", default=None)
     args = ap.parse_args()
