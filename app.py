@@ -64,10 +64,21 @@ DASHBOARD_HTML = """
         </div>
     </div>
     <div class="image-section">
-        <h2>Latest Birds Eye View — sim_global.jpg</h2>
-        <p>Stitched intersection view with YOLO object detection overlaid</p>
+        <h2>Latest Intersection View — YOLO Detection</h2>
+        <p>Real camera frames with object detection overlaid</p>
         {% if image_url %}
-            <img src="{{ image_url }}" alt="Latest stitched intersection view">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <div>
+                <p style="color: #4A90D9; font-size: 13px; margin-bottom: 8px;">Camera 1</p>
+                <img src="{{ cam1_url }}" alt="Camera 1 annotated" style="width:100%; border-radius:8px;">
+            </div>
+            <div>
+                <p style="color: #4A90D9; font-size: 13px; margin-bottom: 8px;">Camera 2</p>
+                <img src="{{ cam2_url }}" alt="Camera 2 annotated" style="width:100%; border-radius:8px;">
+            </div>
+        </div>
+        <p style="color: #888; font-size: 12px; margin-bottom: 8px;">Birds Eye View (Digital Twin)</p>
+        <img src="{{ image_url }}" alt="Digital twin view" style="width:100%; border-radius:8px;">
         {% else %}
             <div class="no-image">No stitched frames available yet. Trigger a stitch to see the output here.</div>
         {% endif %}
@@ -140,6 +151,13 @@ def dashboard():
     image_url = None
     if frame and frame.get("gcs_url"):
         image_url = get_image_url(frame["gcs_url"])
+    cam1_url = None
+    cam2_url = None
+    if frame and frame.get("timestamp"):
+        ts = frame["timestamp"]
+        cam1_url = f"https://storage.googleapis.com/{GCS_BUCKET}/outputs/{ts}/annotated_orig_cam1.jpg"
+        cam2_url = f"https://storage.googleapis.com/{GCS_BUCKET}/outputs/{ts}/annotated_orig_cam2.jpg"
+
     return render_template_string(DASHBOARD_HTML,
         timestamp=frame["timestamp"] if frame else "No data yet",
         total_objects=frame["total_objects"] if frame else 0,
@@ -147,6 +165,8 @@ def dashboard():
         cam2_objects=frame["cam2_objects"] if frame else 0,
         total_frames=frame["total_frames"] if frame else 0,
         image_url=image_url,
+        cam1_url=cam1_url,
+        cam2_url=cam2_url,
         now=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
 
