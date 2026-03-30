@@ -23,7 +23,7 @@ def upload_to_gcs(bucket_name, source_file, destination_blob):
     blob.upload_from_filename(source_file)
     print(f"Uploaded {source_file} to gs://{bucket_name}/{destination_blob}")
 
-def load_yolo(model_name="rosmaster.pt"):
+def load_yolo(model_name="theBest.pt"):
     from ultralytics import YOLO
     model = YOLO(model_name)
     model.fuse()
