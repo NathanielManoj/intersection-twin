@@ -1,3 +1,11 @@
+"""
+main.py
+-------
+Main entrypoint for the intersection digital twin pipeline.
+This script loads camera frames, warps them into bird's-eye view,
+runs YOLO object detection, and creates both visual and metadata outputs.
+"""
+
 import os
 import sys
 import argparse
@@ -6,7 +14,9 @@ import numpy as np
 import datetime
 from google.cloud import storage
 
+# Output bird's-eye view image dimensions.
 BEV_SIZE_PX = 800
+# Default GCS bucket used for uploading results.
 GCS_BUCKET = os.environ.get("GCS_BUCKET", "vehicle-camera-frames")
 
 def download_from_gcs(bucket_name, source_blob, destination):
@@ -24,12 +34,14 @@ def upload_to_gcs(bucket_name, source_file, destination_blob):
     print(f"Uploaded {source_file} to gs://{bucket_name}/{destination_blob}")
 
 def load_yolo(model_name="theBest.pt"):
+    """Load the YOLO model that detects objects in each camera frame."""
     from ultralytics import YOLO
     model = YOLO(model_name)
     model.fuse()
     return model
 
 def check_setup(cam1_image, cam2_image):
+    """Ensure the required camera images and homography files are present before running."""
     required = {
         "cam1 image":       cam1_image,
         "cam2 image":       cam2_image,
@@ -65,6 +77,7 @@ def main():
 
     timestamp = args.timestamp if args.timestamp else datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
+    # If input images are stored in GCS, download them locally first.
     if args.cam1_gcs:
         local_cam1 = "/tmp/cam1.jpg"
         download_from_gcs(GCS_BUCKET, args.cam1_gcs, local_cam1)
@@ -87,6 +100,7 @@ def main():
 
     from detect import run_detection
 
+    # Run detection for both cameras and save annotated originals + BEVs.
     cam1_dets = run_detection(
         original_path = args.cam1,
         bev_path      = bev_cam1_path,

@@ -1,4 +1,12 @@
 
+"""
+pick_corners.py
+---------------
+Interactive helper to compute homography matrices for each camera.
+It walks the user through a two-step corner picking process so that
+camera video can be warped into a common bird's-eye view coordinate frame.
+"""
+
 import cv2
 import numpy as np
 import os
@@ -15,6 +23,7 @@ pts = []   # shared global for mouse callback
 
 
 def on_click(event, x, y, flags, param):
+    """Mouse callback that records clicked corner points."""
     if event == cv2.EVENT_LBUTTONDOWN and len(pts) < 4:
         pts.append([x, y])
 
@@ -38,7 +47,7 @@ def draw(img, labels, instruction):
 
 
 def pick_points(img, labels, instruction):
- 
+    """Display an image and let the user click exactly 4 points."""
     global pts
     pts = []
 
@@ -63,7 +72,7 @@ def pick_points(img, labels, instruction):
 
 
 def warp(img, src_pts, size=OUTPUT_SIZE):
-   
+    """Compute a perspective transform and warp the image to a square BEV."""
     src = np.float32(src_pts)
     dst = np.float32([[0,0],[size,0],[0,size],[size,size]])
     H   = cv2.getPerspectiveTransform(src, dst)

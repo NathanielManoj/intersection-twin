@@ -40,7 +40,11 @@ from datetime import datetime, timezone
 import requests
 
 # ──────────────────────────────────────────────────────
-# CONFIG — edit these to match your setup
+# CONFIG — edit these values for your local test environment.
+# UPLOAD_URL should point to the service /upload endpoint.
+# VIDEO_1 and VIDEO_2 should be the two source camera files.
+# INTERVAL controls how often a fresh frame pair is sent.
+# JPEG_Q controls ffmpeg JPEG compression quality.
 # ──────────────────────────────────────────────────────
 UPLOAD_URL = "https://intersection-twin-809600582102.us-east1.run.app/upload"
 VIDEO_1    = "video1.avi"
@@ -51,6 +55,7 @@ JPEG_Q     = "2"     # JPEG quality: 1 (best) to 31 (worst)
 
 
 def check_ffmpeg():
+    """Ensure ffmpeg is installed before trying to extract video frames."""
     result = subprocess.run(["ffmpeg", "-version"], capture_output=True)
     if result.returncode != 0:
         print("ERROR: ffmpeg not found.")

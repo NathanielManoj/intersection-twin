@@ -1,3 +1,17 @@
+"""
+app.py
+------
+This Flask application exposes a lightweight HTTP API for the intersection digital twin.
+It can:
+  - receive camera frames from cam1/cam2 uploads
+  - trigger the stitching + detection pipeline (
+    main.py)
+  - store / publish metadata to Kafka
+  - render a simple dashboard showing the latest stitched view
+
+The service also provides a health endpoint and a direct /stitch API for manual triggering.
+"""
+
 import os
 import subprocess
 import json
@@ -9,6 +23,8 @@ from neo4j import GraphDatabase
 
 app = Flask(__name__)
 
+# External service configuration comes from environment variables.
+# These control Kafka, Google Cloud Storage, and Neo4j connectivity.
 KAFKA_BOOTSTRAP  = os.environ.get("KAFKA_BOOTSTRAP", "")
 KAFKA_API_KEY    = os.environ.get("KAFKA_API_KEY", "")
 KAFKA_API_SECRET = os.environ.get("KAFKA_API_SECRET", "")

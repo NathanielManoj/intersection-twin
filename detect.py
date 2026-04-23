@@ -1,20 +1,33 @@
 
+"""
+detect.py
+---------
+This module performs per-camera object detection and maps detections
+into a bird's-eye view (BEV) using a saved homography matrix.
+The result is both annotated output images and a list of objects
+with world coordinates for later simulation.
+"""
+
 import cv2
 import numpy as np
 import os
 
+# The intersection is modeled as a 5x5 meter square.
 INTERSECTION_M = 5.0
+# Bird's-eye view image size in pixels.
 BEV_SIZE_PX    = 800
-M_PER_PX       = INTERSECTION_M / BEV_SIZE_PX   
+# Conversion factor from BEV pixels to real-world meters.
+M_PER_PX       = INTERSECTION_M / BEV_SIZE_PX
 
 
 def _warp_points(pts, H):
-    
+    """Apply a homography matrix to image points and return warped coordinates."""
     src = pts.reshape(-1, 1, 2).astype(np.float32)
     return cv2.perspectiveTransform(src, H).reshape(-1, 2)
 
 
 def _px_to_world(px, py):
+    """Convert BEV pixel coordinates into world meters."""
     return px * M_PER_PX, py * M_PER_PX
 
 
@@ -43,6 +56,7 @@ def run_detection(original_path: str,
         )
     H = np.load(H_path)
 
+    # Run YOLO on the original camera image.
     results        = yolo_model(orig, conf=yolo_conf, verbose=False)[0]
     detections     = []
     annotated_orig = orig.copy()

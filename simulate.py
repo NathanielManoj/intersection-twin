@@ -97,12 +97,14 @@ def _to_global(det):
 
 
 def _to_px(wx, wy):
+    """Convert world meters to canvas pixels."""
     return int(wx * M_TO_PX), int(wy * M_TO_PX)
 
 
 # ── Canvas ────────────────────────────────────────────────────────────────────
 
 def _blank_canvas():
+    """Create a blank 800x800 canvas with grid and border."""
     canvas = np.full((CANVAS_PX, CANVAS_PX, 3), C_BG, dtype=np.uint8)
 
     # Grid every 0.5 m
@@ -131,7 +133,7 @@ def _blank_canvas():
 
 
 def _draw_camera(canvas, cam_id, color):
-    """Draws a camera marker (triangle + label) at its world position."""
+    """Draw a camera marker (triangle + label) at its world position."""
     pos = CAM_POSITIONS[cam_id]
     px  = _to_px(*pos)
 
@@ -144,6 +146,7 @@ def _draw_camera(canvas, cam_id, color):
 
 
 def _draw_object(canvas, det, color):
+    """Draw a detected object as a rectangle on the canvas."""
     w_m, h_m = OBJECT_SIZES.get(det["label"], OBJECT_SIZES["default"])
 
     hw   = max(int(w_m * M_TO_PX / 2), 6)
@@ -160,6 +163,7 @@ def _draw_object(canvas, det, color):
 
 
 def _legend(canvas, entries):
+    """Add a legend to the canvas showing color meanings."""
     for i, (text, color) in enumerate(entries):
         y = 20 + i * 22
         cv2.rectangle(canvas, (8, y - 10), (18, y), color, -1)
@@ -205,6 +209,7 @@ def _deduplicate(cam1_global, cam2_global):
 # ── Public API ────────────────────────────────────────────────────────────────
 
 def render_all(cam1_dets: list, cam2_dets: list, output_dir: str = "outputs"):
+    """Render three simulation images: cam1 view, cam2 view, and global merged."""
     os.makedirs(output_dir, exist_ok=True)
 
     # Convert all detections to global world frame
